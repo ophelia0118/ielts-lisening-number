@@ -1,0 +1,140 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>雅思听力听写 v3</title>
+<style>
+:root{--bg:#eef2f7;--card:#fff;--pri:#4f46e5;--pri2:#6366f1;--ok:#059669;--no:#dc2626;--mut:#64748b;--line:#e2e8f0}
+*{box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif;background:linear-gradient(135deg,#eef2ff,#f0f9ff);margin:0;color:#0f172a;min-height:100vh}
+main{max-width:720px;margin:32px auto;background:var(--card);padding:28px 32px;border-radius:18px;box-shadow:0 10px 30px rgba(79,70,229,.12)}
+h1{font-size:22px;margin:0 0 18px;background:linear-gradient(90deg,#4f46e5,#0ea5e9);-webkit-background-clip:text;color:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;align-items:center}
+label{font-size:14px;color:#334155}
+.row label:has(.t){background:#f1f5f9;border:1px solid var(--line);padding:6px 12px;border-radius:999px;cursor:pointer;user-select:none;transition:.15s}
+.row label:has(.t:checked){background:#eef2ff;border-color:var(--pri2);color:var(--pri)}
+.t{accent-color:var(--pri)}
+select{font-size:14px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:#fff}
+button{font-size:15px;padding:9px 16px;border:0;border-radius:10px;background:var(--pri);color:#fff;cursor:pointer;transition:.15s;box-shadow:0 2px 6px rgba(79,70,229,.25)}
+button:hover{background:var(--pri2);transform:translateY(-1px)}
+button.sec{background:#f1f5f9;color:#334155;box-shadow:none;border:1px solid var(--line)}
+button.sec:hover{background:#e2e8f0}
+#timer{margin-left:auto;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--pri);background:#eef2ff;padding:4px 14px;border-radius:10px}
+#ans{font-size:26px;padding:14px 16px;width:100%;margin-top:10px;border:2px solid var(--line);border-radius:12px;outline:none;transition:.15s;letter-spacing:.5px}
+#ans:focus{border-color:var(--pri2);box-shadow:0 0 0 4px rgba(99,102,241,.15)}
+#hint{font-size:13px;color:var(--mut);margin-top:8px;line-height:1.6}
+#fb{font-size:18px;min-height:56px;margin-top:14px;padding:10px 14px;border-radius:12px;background:#f8fafc}
+#fb:empty{background:none;padding:0}
+#fb button{font-size:13px;padding:4px 10px;margin-left:4px}
+#fb small{color:var(--mut)}
+.ok{color:var(--ok)}.no{color:var(--no)}
+#stat{font-size:15px;color:#334155;margin-top:14px;font-weight:600}
+table{width:100%;font-size:14px;border-collapse:collapse;margin-top:10px;border-radius:10px;overflow:hidden}
+th{background:#f1f5f9;color:#475569;font-weight:600}
+td,th{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left}
+tr:hover td{background:#fafbff}
+@media(max-width:600px){main{margin:0;border-radius:0;padding:18px 14px;min-height:100vh}h1{font-size:18px}button{padding:10px 12px;font-size:14px}#ans{font-size:22px}#timer{font-size:18px}td,th{padding:6px;font-size:13px}}
+[hidden]{display:none!important}#ctl{margin:18px 0 6px}.stage{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button.big{font-size:17px;padding:13px 26px;border-radius:12px;min-width:200px}
+button.ghost{background:transparent;color:#4f46e5;border:1px solid #c7d2fe;box-shadow:none}button.ghost:hover{background:#eef2ff;transform:none}
+button.sm{padding:5px 10px;font-size:13px}
+a.link{color:#64748b;font-size:14px;margin-left:auto}a.link:hover{color:#dc2626}
+kbd{font-size:11px;opacity:.7;border:1px solid currentColor;border-radius:4px;padding:0 4px;margin-left:4px;font-family:inherit}
+#ans:disabled{background:#f8fafc;color:#94a3b8}
+@media(max-width:600px){button.big{width:100%;min-width:0}a.link{margin-left:0}kbd{display:none}}
+</style></head><body><main>
+<h1>雅思听力 · 数字 / 价格 / 日期 / 时间 / 拼写 听写</h1>
+<div class="row">
+<label><input type="checkbox" class="t" value="num" checked>数字/电话</label>
+<label><input type="checkbox" class="t" value="price" checked>价格</label>
+<label><input type="checkbox" class="t" value="date" checked>日期</label>
+<label><input type="checkbox" class="t" value="time" checked>时间</label>
+<label><input type="checkbox" class="t" value="spell" checked>拼写</label>
+</div>
+<div class="row"><span style="font-size:14px;color:#334155">数字专项：</span>
+<label><input type="checkbox" class="t" value="teen">十几/几十</label>
+<label><input type="checkbox" class="t" value="ord">第几</label>
+<label><input type="checkbox" class="t" value="month">月份拼写</label>
+<button class="ghost sm" id="preset1">只练数字专项</button><button class="ghost sm" id="preset0">恢复常规</button>
+</div>
+<div class="row"><label>语速 <select id="rate"><option value="0.8">慢</option><option value="0.95" selected>正常</option><option value="1.1">快（考试）</option></select></label>
+<label>口音 <select id="voice"></select></label>
+<button class="sec" onclick="testV()">🔈 测试声音</button><button id="stop" class="ghost sm" hidden>结束</button><span id="timer" style="margin-left:auto;font-size:18px">10:00</span></div>
+<div id="ctl">
+ <div class="stage" id="st0"><button id="start" class="big">▶ 开始 10 分钟练习</button><button id="free" class="ghost">不计时，随便练</button></div>
+ <div class="stage" id="st1" hidden><button id="sub" class="big">提交 <kbd>Enter</kbd></button><button id="again" class="ghost">🔊 再听一遍 <kbd>R</kbd></button><a href="#" id="show" class="link">没听出来，看答案</a></div>
+ <div class="stage" id="st2" hidden><button id="next" class="big">下一题 → <kbd>Enter</kbd></button><button id="re1" class="ghost">🔊 回听 <kbd>R</kbd></button><button id="re2" class="ghost">🐢 慢速回听</button></div>
+</div>
+<input id="ans" disabled placeholder="听到就写，回车提交" autocomplete="off">
+<div id="hint">全程只按 Enter 就行：Enter 提交，再按 Enter 下一题；R 重听，输入时按 Esc 重听。格式：第几写数字（如 17 或 17th）；十几/几十写阿拉伯数字；月份拼完整英文；价格写 4.45；日期写 22 October；时间写 6:40；电话连写数字；拼写写单词本身。大小写不限。</div>
+<div id="fb"></div>
+<div id="stat">已做 0 · 正确 0</div>
+<div class="row" style="margin-top:20px"><button id="exp" class="sec">⬇ 导出错题</button><button id="expall" class="sec">⬇ 导出全部记录</button></div><table><thead><tr><th>类型</th><th>正确答案</th><th>你的</th></tr></thead><tbody id="log"></tbody></table>
+</main><script>
+const R=a=>a[Math.floor(Math.random()*a.length)],ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const ordW=['','first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth','eleventh','twelfth','thirteenth','fourteenth','fifteenth','sixteenth','seventeenth','eighteenth','nineteenth','twentieth','twenty-first','twenty-second','twenty-third','twenty-fourth','twenty-fifth','twenty-sixth','twenty-seventh','twenty-eighth','twenty-ninth','thirtieth','thirty-first'];
+const names=['Manuja','Harrison','Maclean','Thornton','Gilbert','Peacock','Rawlings','Jefferson','Woodville','Pemberton','Ashworth','Kingsley','Lomax','Bradshaw','Fitzgerald','Cheshire','Hutchinson','Keswick','Yardley','Quentin','Vaughan','Jacobs','Nicholls','Sheffield','Eastleigh','Bellingham'];
+const L=c=>c==='Z'?'zed':c;
+function spellSay(w){let u=w.toUpperCase(),o=[];for(let i=0;i<u.length;i++){if(u[i]===u[i+1]){o.push('double '+L(u[i]));i++}else o.push(L(u[i]))}return o.join(', ')}
+const gen={
+num(){const k=ri(0,2);if(k===0){const p=R([[13,30],[14,40],[15,50],[16,60],[17,70],[18,80],[19,90]]);const n=R(p);return{say:String(n),a:[String(n)],t:'数字'}}
+ if(k===1){const n=ri(100,9999);return{say:String(n),a:[String(n)],t:'数字'}}
+ let d='0'+ri(1,9);for(let i=0;i<8;i++)d+=Math.random()<.2?d.slice(-1):ri(0,9);
+ let s=[],i=0;while(i<d.length){if(d[i]===d[i+1]){s.push('double '+(d[i]==='0'?'oh':d[i]));i+=2}else{s.push(d[i]==='0'?'oh':d[i]);i++}}
+ return{say:s.join(' '),a:[d],t:'电话'}},
+price(){const p=ri(1,99),c=R([0,5,25,45,50,75,95,99,ri(1,99)]);const a=c?p+'.'+String(c).padStart(2,'0'):String(p);
+ const say=c?R([p+' pounds '+c,p+' '+(c<10?'oh '+c:c)]):p+' pounds';return{say,a:[a,'£'+a],t:'价格'}},
+date(){const m=ri(0,11),d=ri(1,28);const say=R(['the '+ordW[d]+' of '+months[m],months[m]+' the '+ordW[d]]);
+ return{say,a:[d+' '+months[m],months[m]+' '+d,d+'th '+months[m],d+'st '+months[m],d+'nd '+months[m],d+'rd '+months[m]],t:'日期'}},
+time(){const h=ri(1,12),m=R([0,15,30,45,40,50,20,10,35,25,5,55]);let say;
+ if(m===0)say=h+" o'clock";else if(m===15)say='quarter past '+h;else if(m===30)say='half past '+h;else if(m===45)say='quarter to '+(h%12+1);
+ else if(m<30)say=Math.random()<.5?m+' past '+h:h+' '+m;else say=Math.random()<.5?(60-m)+' to '+(h%12+1):h+' '+m;
+ const a=h+':'+String(m).padStart(2,'0');return{say,a:[a,a.replace(':','.')],t:'时间'}},
+teen(){const b=ri(3,9);const n=Math.random()<.5?10+b:b*10;const k=ri(0,2);
+ if(k===0)return{say:String(n),a:[String(n)],t:'十几/几十'};
+ if(k===1){const c=ri(1,9)*100;return{say:'about '+n,a:[String(n)],t:'十几/几十'}}
+ return{say:'number '+n+', please',a:[String(n)],t:'十几/几十'}},
+ord(){const d=ri(1,31);return{say:R(['the '+ordW[d],ordW[d]+' floor','on the '+ordW[d]]),a:[String(d),d+(d%10==1&&d!=11?'st':d%10==2&&d!=12?'nd':d%10==3&&d!=13?'rd':'th')],t:'第几'}},
+month(){const m=R(months);return{say:m,a:[m],t:'月份拼写'}},
+spell(){const w=R(names);return{say:'That\'s '+w+'. '+spellSay(w),a:[w],t:'拼写'}}};
+let last=null,hist=[],cur=null,n=0,ok=0,voices=[];
+function loadV(){voices=speechSynthesis.getVoices().filter(v=>/^en/.test(v.lang));const s=document.getElementById('voice');s.innerHTML=voices.map((v,i)=>`<option value="${i}">${v.name} (${v.lang})</option>`).join('');const gb=voices.findIndex(v=>v.lang==='en-GB');if(gb>=0)s.value=gb}
+speechSynthesis.onvoiceschanged=loadV;loadV();
+function speak(t){if(!('speechSynthesis' in window)){alert('这个浏览器不支持朗读，请用 Chrome、Edge 或 Safari 打开（微信、文件预览里不行）');return}
+ if(speechSynthesis.speaking||speechSynthesis.pending)speechSynthesis.cancel();speechSynthesis.resume();const u=new SpeechSynthesisUtterance(t);u.rate=+rate.value;const v=voices[+voice.value];if(v){u.voice=v;u.lang=v.lang}else u.lang='en-GB';u.volume=1;let st=false;u.onstart=()=>st=true;u.onerror=e=>{if(e.error!=='interrupted'&&e.error!=='canceled')alert('朗读失败：'+e.error+'。试试换一个口音，或检查是否静音')};speechSynthesis.speak(u);setTimeout(()=>{if(!st&&!speechSynthesis.speaking)document.getElementById('hint').innerHTML='<b style="color:#dc2626">没有声音？检查：手机静音键是否关闭、媒体音量、换一个口音选项；必须用 Safari/Chrome 打开，微信和文件预览不支持。</b>'},2500)}
+function testV(){speak('Hello, this is a sound test. Four forty-five.')}
+function nextQ(){const ts=[...document.querySelectorAll('.t:checked')].map(x=>x.value);if(!ts.length)return alert('至少选一类');cur=gen[R(ts)]();fb.textContent='';ans.value='';ans.focus();speak(cur.say)}
+const norm=s=>s.toLowerCase().replace(/[£,\s]+/g,' ').replace(/\s+/g,' ').trim();
+function check(){if(!cur)return;const u=ans.value.trim();const good=cur.a.some(a=>norm(a)===norm(u)||norm(a).replace(/ /g,'')===norm(u).replace(/ /g,''));
+ n++;if(good)ok++;last=cur;cur.u=u;cur.good=good;cur.time=new Date().toLocaleString();hist.push(cur);fb.innerHTML=(good?'<span class="ok">✓ 正确</span>':'<span class="no">✗ 答案：'+cur.a[0]+'</span>')+' <button onclick="speak(last.say)">🔊 回听</button> <button class="sec" onclick="slow(last.say)">慢速回听</button><br><small>朗读内容：'+cur.say+'</small>';
+ log.insertAdjacentHTML('afterbegin',`<tr><td>${cur.t} <button class="sec" style="padding:2px 6px;font-size:12px" onclick="speak(hist[${hist.length-1}].say)">🔊</button></td><td>${cur.a[0]}</td><td class="${good?'ok':'no'}">${u||'(空)'}</td></tr>`);
+ stat.textContent=`已做 ${n} · 正确 ${ok} · 正确率 ${Math.round(ok/n*100)}%`;cur=null}
+
+function slow(t){const r=rate.value;rate.value='0.8';speak(t);rate.value=r}
+
+
+
+
+function dl(rows,name){if(!rows.length)return alert('还没有可导出的记录');const esc=v=>'"'+String(v).replace(/"/g,'""')+'"';
+ const csv='\ufeff'+['时间,类型,正确答案,你的答案,结果,朗读原文'].concat(rows.map(q=>[q.time,q.t,q.a[0],q.u||'(空)',q.good?'对':'错',q.say].map(esc).join(','))).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=name+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click()}
+exp.onclick=()=>dl(hist.filter(q=>!q.good),'听写错题');expall.onclick=()=>dl(hist,'听写记录');
+
+function stage(k){[0,1,2].forEach(i=>document.getElementById('st'+i).hidden=i!==k);ans.disabled=k!==1;if(k===1)ans.focus();else if(k===2)document.getElementById('next').focus()}
+const _nq=nextQ;nextQ=function(){_nq();if(cur)stage(1)};
+const _ck=check;check=function(){if(!cur)return;_ck();stage(2)};
+sub.onclick=()=>{if(!ans.value.trim()){ans.focus();ans.placeholder='先写答案，或点「看答案」';return}check()};
+show.onclick=e=>{e.preventDefault();check()};
+next.onclick=()=>nextQ();
+again.onclick=()=>cur&&speak(cur.say);re1.onclick=()=>last&&speak(last.say);re2.onclick=()=>last&&slow(last.say);
+document.addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;
+ if(e.key==='Enter'){e.preventDefault();if(!document.getElementById('st1').hidden)sub.click();else if(!document.getElementById('st2').hidden)nextQ()}
+ if((e.key==='r'||e.key==='R')&&e.target!==ans){(cur?again:re1).click()}
+ if(e.key==='r'&&e.ctrlKey){}});
+ans.addEventListener('keydown',e=>{if(e.key==='Escape')again.click()});
+let left=600,iv=null;
+function endS(msg){clearInterval(iv);iv=null;speechSynthesis.cancel();cur=null;stage(0);stop.hidden=true;timer.textContent='10:00';if(msg)alert(msg)}
+start.onclick=()=>{clearInterval(iv);left=600;stop.hidden=false;iv=setInterval(()=>{left--;timer.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');if(left<=0)endS('10 分钟到！正确率 '+(n?Math.round(ok/n*100):0)+'%，记得导出错题')},1000);nextQ()};
+free.onclick=()=>{stop.hidden=false;timer.textContent='∞';nextQ()};
+stop.onclick=()=>{if(confirm('结束本次练习？记录会保留在下方'))endS()};
+
+const setT=v=>document.querySelectorAll('.t').forEach(x=>x.checked=v.includes(x.value));
+preset1.onclick=()=>setT(['teen','ord','month']);preset0.onclick=()=>setT(['num','price','date','time','spell']);
+</script></body></html>
